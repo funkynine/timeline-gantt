@@ -123,6 +123,10 @@
           }
         }
       }
-    }},
-  "defaultProject": "timeline"
+    }
+  },
+  "defaultProject": "timeline",
+  "cli": {
+    "analytics": false
+  }
 }
