@@ -1,19 +1,52 @@
 <div class="container-timeline">
+  <header>
+    <div class="container-select">
+      <app-select [items]="dataSelect" (emitValue)="setUserSelectedDate($event)"></app-select>
+    </div>
+
+    <mat-button-toggle-group [formControl]="dateRangeType">
+      <mat-button-toggle [value]="0">Week</mat-button-toggle>
+      <mat-button-toggle [value]="1">Month</mat-button-toggle>
+      <mat-button-toggle [value]="2">Quarter</mat-button-toggle>
+      <mat-button-toggle [value]="3">Year</mat-button-toggle>
+    </mat-button-toggle-group>
+  </header>
+
   <div class="chart">
     <!-- Header -->
-    <div class="chart-row chart-period">
-        <div class="chart-row__item">Topics</div>
+    <div *ngIf="isUseWrapper(); else wrapper" class="chart-row chart-period-upper">
+      <div class="chart-row__item">Topics</div>
 
-        <div class="header-element" *ngFor="let day of timelineElements">
-          <div class="header-element__name">{{ day.digit }}</div>
-          <div class="header-element__name">{{ day.name }}</div>
-        </div>
+      <!-- Container for month's -->
+      <div class="header-element" *ngFor="let day of (timelineData$ | async)?.upperHeaderItems">
+        <div class="header-element__name">{{ day.name }}</div>
+      </div>
+    </div>
+
+    <ng-template #wrapper>
+      <div class="chart-row chart-period">
+          <div class="chart-row__item">Topics</div>
+
+          <!-- Container for days -->
+          <div class="header-element" *ngFor="let day of (timelineData$ | async)?.headerItems">
+            <div class="header-element__name">{{ day?.dayCount }}</div>
+            <div class="header-element__name">{{ day.dayOfWeekShort }}</div>
+          </div>
+      </div>
+    </ng-template>
+
+    <!-- Upper Lines -->
+    <div *ngIf="isUseWrapper(); else lines" class="chart-row chart-lines-upper">
+      <div class="chart-lines__element" *ngFor="let day of (timelineData$ | async)?.upperHeaderItems"></div>
     </div>
 
     <!-- Lines -->
-    <div class="chart-row chart-lines">
-      <div class="chart-lines__element" *ngFor="let day of timelineElements"></div>
-    </div>
+    <ng-template #lines>
+      <div  class="chart-row chart-lines">
+        <div class="chart-lines__element" *ngFor="let day of (timelineData$ | async)?.bodyItems"></div>
+      </div>
+    </ng-template>
+
 
     <!-- Body -->
     <div class="chart-row" *ngFor="let topic of topics">

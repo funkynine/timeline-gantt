@@ -7,7 +7,24 @@
 }
 
 :root {
-  --timelineElements: 30;
+  --upperHeaderElements: 1;
+  --headerElements: 3;
+  --bodyElements: 0;
+}
+
+$upperHeaderElements: var(--upperHeaderElements);
+$headerElements: var(--headerElements);
+$bodyElements: var(--bodyElements);
+
+
+header {
+  display: flex;
+  justify-content: space-between;
+  padding: 24px;
+}
+
+.container-select {
+  width: 5%;
 }
 
 .container-timeline {
@@ -30,8 +47,7 @@
   text-align: center;
   font-size: 13px;
   padding-top: 10px;
-  padding-bottom: 6px;
-  border-right: 1px solid #fff;
+  background-color: #fff;
   border-bottom: 0.3px solid #c1c6d0;
   z-index: 2;
 }
@@ -51,10 +67,23 @@
   }
 }
 
-.chart-period {
+.chart-period{
   color: #778397;
   background-color:  #fff;
-  grid-template-columns: 25% repeat(var(--timelineElements), 1fr);
+  grid-template-columns: 25% repeat($headerElements, 1fr);
+}
+
+.chart-period-upper {
+  color: #778397;
+  background-color:  #fff;
+  grid-template-columns: 25% repeat($upperHeaderElements, 1fr);
+
+  &-sub {
+    display: grid;
+    color: #778397;
+    background-color:  #fff;
+    grid-template-columns: repeat($headerElements, 1fr);
+  }
 }
 
 .chart-lines {
@@ -62,7 +91,20 @@
   height: 100%;
   width: 100%;
   background-color: transparent;
-  grid-template-columns: 25% repeat(var(--timelineElements), 1fr);
+  grid-template-columns: 25% repeat($headerElements, 1fr);
+
+  &__element {
+    display: block;
+    border-right: 0.5px solid #c1c6d0;
+  }
+}
+
+.chart-lines-upper {
+  position: absolute;
+  height: 100%;
+  width: 100%;
+  background-color: transparent;
+  grid-template-columns: 25% repeat($upperHeaderElements, 1fr);
 
   &__element {
     display: block;
@@ -75,7 +117,7 @@
   display: grid;
   padding: 15px 0;
   margin: 0;
-  grid-template-columns: repeat(var(--timelineElements), 1fr);
+  grid-template-columns: repeat($bodyElements, 1fr);
   grid-gap: 10px 0;
   border-bottom: 0.3px solid  #c1c6d0;
 

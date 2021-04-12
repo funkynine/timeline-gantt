@@ -1,4 +1,13 @@
 import { Component, OnInit } from '@angular/core';
+import { FormControl } from '@angular/forms';
+import { DateRangeService, DateRangeTypes } from './services/date-range.service';
+import { getMonthsSixYears, getMonthDays, getDateMonth } from './utils/date-range.utils';
+
+enum TimelineCssVariables {
+  upperHeader = '--upperHeaderElements',
+  headerElements = '--headerElements',
+  bodyElements = '--bodyElements',
+}
 
 @Component({
   selector: 'app-root',
@@ -16,12 +25,12 @@ export class AppComponent implements OnInit {
         {
           name: 'Meet with Up',
           start: 1,
-          end: 4,
+          end: 20,
         },
         {
           name: 'Meet with Center',
-          start: 5,
-          end: 9,
+          start: 20,
+          end: 40,
         }
       ],
       subTopics: [
@@ -37,13 +46,13 @@ export class AppComponent implements OnInit {
       events: [
         {
           name: 'Meet with Down',
-          start: 2,
-          end: 5,
+          start: 30,
+          end: 300,
         },
         {
           name: 'Meet with Lower',
-          start: 1,
-          end: 7,
+          start: 160,
+          end: 320,
         }
       ],
       subTopics: [
@@ -59,13 +68,13 @@ export class AppComponent implements OnInit {
       events: [
         {
           name: 'Meet with Down',
-          start: 9,
-          end: 13,
+          start: 10,
+          end: 70,
         },
         {
           name: 'Meet with Lower',
-          start: 1,
-          end: 7,
+          start: 140,
+          end: 220,
         }
       ],
       subTopics: [
@@ -76,10 +85,46 @@ export class AppComponent implements OnInit {
     },
   ];
 
-  timelineElements = new Array(30).fill({name: 'Mon', digit: 1 });
+  dateRangeType = new FormControl(1);
+  timelineData$ = this.dateRangeService.timelineData$;
+
+  dataSelect = [{name: 'March 2021', id: 0}, {name: 'March 2021 Week 2', id: 1}, {name: 'Q3 2021', id: 2}];
+
+  constructor(
+    private dateRangeService: DateRangeService,
+  ) {}
 
   ngOnInit() {
-    this.getCountElementsTimelineStyles();
+    this.init();
+  }
+
+  init(): void {
+    this.dataSelect = getMonthsSixYears();
+    this.subscriber();
+  }
+
+  subscriber(): void {
+    this.dateRangeType
+      .valueChanges
+      .subscribe((dateRangeType: number) => this.dateRangeService.emitTimelineData({dateRangeType}));
+
+    this.timelineData$
+      .subscribe(timelineData => {
+        console.log('timelineData 4: ', timelineData);
+        this.dateRangeType.setValue(timelineData.dateRangeType, {emitEvent: false});
+
+        if (timelineData.headerItems.length && timelineData.dateRangeType === DateRangeTypes.Month) {
+          this.setStyleVariables(TimelineCssVariables.headerElements, timelineData.headerItems.length);
+          this.setStyleVariables(TimelineCssVariables.bodyElements, timelineData.bodyItems.length);
+          this.setStyleVariables(TimelineCssVariables.upperHeader, 0);
+        }
+
+        if (timelineData.upperHeaderItems.length && timelineData.dateRangeType === DateRangeTypes.Year) {
+          this.setStyleVariables(TimelineCssVariables.upperHeader, timelineData.upperHeaderItems.length);
+          this.setStyleVariables(TimelineCssVariables.headerElements, timelineData.headerItems.length);
+          this.setStyleVariables(TimelineCssVariables.bodyElements, timelineData.bodyItems.length);
+        }
+      });
   }
 
   getPositionAndColor(start: number, end: number, background: string) {
@@ -89,7 +134,15 @@ export class AppComponent implements OnInit {
     };
   }
 
-  getCountElementsTimelineStyles() {
-    this.root.style.setProperty('--timelineElements', `${this.timelineElements.length}`);
+  setUserSelectedDate(date: string): void {
+    this.dateRangeService.emitTimelineData({userSelectedDate: date});
+  }
+
+  setStyleVariables(name: string, value: number): void {
+    this.root.style.setProperty(name, `${value}`);
+  }
+
+  isUseWrapper(): boolean {
+    return this.dateRangeType.value !== DateRangeTypes.Month;
   }
 }

@@ -1,0 +1,16 @@
+<mat-form-field class="custom-select">
+  <img class="custom-select__icon" src="assets/group.png" alt="icon">
+
+  <mat-select
+    class="custom-select__item"
+    disableOptionCentering
+    defaultTabIndex="0"
+    panelClass="myPanelClass"
+    (selectionChange)="changeValue($event)"
+    [value]="items[defaultItem].name"
+  >
+    <mat-option *ngFor="let item of items" [value]="item.name" class="custom-select__option">
+      {{item.name}}
+    </mat-option>
+  </mat-select>
+</mat-form-field>
